@@ -1,7 +1,7 @@
 
-const core = require('@actions/core')
-const { Toolkit } = require('actions-toolkit')
-const issueParser = require('issue-parser')
+const core = require('@actions/core');
+const { Toolkit } = require('actions-toolkit');
+const issueParser = require('issue-parser');
 const parse = issueParser('github');
 Toolkit.run(async tools => {
   try {
@@ -26,10 +26,12 @@ Toolkit.run(async tools => {
   secrets: ['GITHUB_TOKEN']
 });
 
+/**
+ *
+ * @param {Toolkit} tools
+ */
 async function verifyLinkedIssue(tools) {
-  const context = tools.context,
-    github = tools.github,
-    log = tools.log;
+  const { context, github, log } = tools;
 
   let linkedIssue = await checkBodyForValidIssue(context, github, log);
 
@@ -57,7 +59,13 @@ async function verifyLinkedIssue(tools) {
   }
 }
 
-async function checkBodyForValidIssue(context, github, log) {
+/**
+ *
+ * @param {Toolkit} tools
+ */
+async function checkBodyForValidIssue(tools) {
+  const { context, github, log } = tools;
+
   let body = context.payload.pull_request.body;
   log.debug(`Checking PR Body: "${body}"`)
   const matches = parse(body);
@@ -93,7 +101,13 @@ async function checkBodyForValidIssue(context, github, log) {
   return false;
 }
 
-async function checkEventsListForConnectedEvent(context, github, log) {
+/**
+ *
+ * @param {Toolkit} tools
+ */
+async function checkEventsListForConnectedEvent(tools) {
+  const { context, github, log } = tools;
+
   let pull = await github.issues.listEvents({
     owner: context.repo.owner,
     repo: context.repo.repo,
@@ -114,7 +128,13 @@ async function checkEventsListForConnectedEvent(context, github, log) {
   return hasConnectedEvents;
 }
 
-async function createMissingIssueComment(context, github, log, tools) {
+/**
+ *
+ * @param {Toolkit} tools
+ */
+async function createMissingIssueComment(tools) {
+  const { context, github, log } = tools;
+
   const defaultMessage = 'Build Error! No Linked Issue found. Please link an issue or mention it in the body using #<issue_id>';
   let messageBody = core.getInput('message');
   if (!messageBody) {
