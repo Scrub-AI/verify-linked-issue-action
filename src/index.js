@@ -33,12 +33,12 @@ Toolkit.run(async tools => {
 async function verifyLinkedIssue(tools) {
   const { context, github, log } = tools;
 
-  let linkedIssue = await checkBodyForValidIssue(context, github, log);
+  let linkedIssue = await checkBodyForValidIssue(tools);
 
   const isQuiet = core.getInput('quiet') === 'true';
   const noComment = isQuiet ? isQuiet : (core.getInput('no_comment') === 'true');
   if (!linkedIssue) {
-    linkedIssue = await checkEventsListForConnectedEvent(context, github, log);
+    linkedIssue = await checkEventsListForConnectedEvent(tools);
   }
 
   if (linkedIssue) {
@@ -46,7 +46,7 @@ async function verifyLinkedIssue(tools) {
     core.setOutput("has_linked_issues", "true");
   } else {
     if (!noComment) {
-      await createMissingIssueComment(context, github, log, tools);
+      await createMissingIssueComment(tools);
     } else {
       log.error("No comment mode enabled, no comment added!");
     }
